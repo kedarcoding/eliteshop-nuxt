@@ -7,8 +7,8 @@
         <span class="text-yellow-400">Ked</span>Craft
       </h1>
 
-      <!-- Nav -->
-      <nav class="flex gap-8">
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex gap-8">
         <NuxtLink
           v-for="item in menu"
           :key="item.to"
@@ -28,12 +28,63 @@
           />
         </NuxtLink>
       </nav>
+
+      <!-- Mobile Hamburger -->
+      <div class="md:hidden flex items-center">
+        <button @click="isOpen = !isOpen" class="focus:outline-none">
+          <svg
+            v-if="!isOpen"
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+          <svg
+            v-else
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
     </div>
+
+    <!-- Mobile Menu -->
+    <transition name="fade">
+      <div v-if="isOpen" class="md:hidden bg-slate-700">
+        <nav class="flex flex-col py-4 px-6 gap-4">
+          <NuxtLink
+            v-for="item in menu"
+            :key="item.to"
+            :to="item.to"
+            @click="isOpen = false"
+            class="font-bold text-lg transition"
+            :class="{
+              'text-yellow-400': route.path === item.to,
+              'hover:text-yellow-400': route.path !== item.to
+            }"
+          >
+            {{ item.label }}
+          </NuxtLink>
+        </nav>
+      </div>
+    </transition>
   </header>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 const route = useRoute()
+const isOpen = ref(false)
 
 const menu = [
   { label: 'Home', to: '/' },
@@ -42,3 +93,12 @@ const menu = [
   { label: 'Contact', to: '/contact' }
 ]
 </script>
+
+<style>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.2s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+</style>
