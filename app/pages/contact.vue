@@ -1,45 +1,52 @@
 <template>
   <section class="w-full py-16 bg-gray-50">
     <h2
-  class="text-4xl md:text-5xl font-extrabold text-center mb-12 mt-8 
-         bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-600 
-         bg-clip-text text-transparent animate-fadeIn"
->
-  Get in Touch
-</h2>
+      class="text-4xl md:text-5xl font-extrabold text-center mb-12 mt-8 
+             bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-600 
+             bg-clip-text text-transparent animate-fadeIn">
+      Get in Touch
+    </h2>
 
     <div class="max-w-4xl mx-auto grid gap-8 md:grid-cols-2">
-
-      <div v-for="(contact, index) in contacts" :key="contact.title"
-           class="glass-card flex items-center gap-4 animate-popUp"
-           :style="{ animationDelay: index * 100 + 'ms' }">
-
+      <div
+        v-for="(contact, index) in contacts"
+        :key="contact.title"
+        class="glass-card flex items-center gap-4 animate-popUp"
+        :style="{ animationDelay: index * 100 + 'ms' }"
+      >
         <div :class="['icon', contact.bg]" :style="{ color: contact.color }">
-          <component :is="contact.icon" class="w-8 h-8"/>
+          <component :is="contact.icon" class="w-8 h-8" />
         </div>
 
         <div>
-          <h5 class="text-lg font-semibold text-gray-900">{{ contact.title }}</h5>
+          <h5 class="text-lg font-semibold text-gray-900">
+            {{ contact.title }}
+          </h5>
+
           <template v-if="contact.link">
-            <a :href="contact.link" target="_blank" 
-               class="text-blue-600 hover:underline">
+            <a :href="contact.link" target="_blank" class="text-blue-600 hover:underline">
               {{ contact.text }}
             </a>
           </template>
+
           <template v-else>
             <p class="text-gray-700 font-semibold">{{ contact.text }}</p>
           </template>
         </div>
+      </div>
 
+      <div v-if="!contacts.length && !loading" class="text-center text-gray-500 col-span-2">
+        No contact data found.
       </div>
     </div>
   </section>
 </template>
 
 <script setup>
-import { h } from 'vue'
+import { ref, h } from 'vue'
+import { apiService } from '../utils/api'
 
-// Official SVG icons
+// SVG icons
 const PhoneIcon = () => h('svg', { viewBox: '0 0 24 24', fill: 'currentColor', class: 'w-8 h-8' }, [
   h('path', { d: 'M3 5a2 2 0 012-2h2.5a.5.5 0 01.5.5V6a1 1 0 01-1 1H5v3h2a1 1 0 011 1v2.5a.5.5 0 01-.5.5H5a2 2 0 01-2-2V5z' })
 ])
@@ -61,47 +68,30 @@ const TwitterIcon = () => h('svg', { viewBox: '0 0 24 24', fill: 'currentColor',
   h('path', { d: 'M23.954 4.569c-.885.392-1.83.656-2.825.775 1.014-.611 1.794-1.574 2.163-2.723-.951.555-2.005.959-3.127 1.184-.897-.959-2.178-1.555-3.594-1.555-2.717 0-4.924 2.206-4.924 4.924 0 .39.045.765.127 1.124-4.09-.205-7.719-2.165-10.148-5.144-.424.724-.666 1.562-.666 2.475 0 1.71.87 3.213 2.188 4.096-.807-.026-1.566-.247-2.229-.616v.061c0 2.385 1.693 4.374 3.946 4.827-.413.111-.849.171-1.296.171-.317 0-.626-.03-.927-.086.627 1.956 2.444 3.379 4.6 3.419-1.68 1.319-3.809 2.105-6.102 2.105-.396 0-.788-.023-1.175-.069 2.179 1.397 4.768 2.212 7.557 2.212 9.054 0 14-7.496 14-13.986 0-.21 0-.423-.015-.634.962-.689 1.8-1.56 2.46-2.548l-.047-.02z' })
 ])
 
-const contacts = [
-  { title: 'Phone', text: '+91-9146755163', icon: PhoneIcon, bg: 'bg-blue-100', color: '#2563EB' },
-  { title: 'Email', text: 'kedargolande9@gmail.com', icon: EmailIcon, bg: 'bg-blue-100', color: '#2563EB' },
-  { title: 'LinkedIn', text: 'Visit Profile', link: 'https://www.linkedin.com/in/kedar-golande-411b9b167', icon: LinkedInIcon, bg: 'bg-blue-100', color: '#0A66C2' },
-  // { title: 'GitHub', text: 'Visit Profile', link: '#', icon: GitHubIcon, bg: 'bg-gray-100', color: '#000' },
-  { title: 'Twitter', text: 'Visit Profile', link: 'https://twitter.com/kedarmagic', icon: TwitterIcon, bg: 'bg-blue-100', color: '#1DA1F2' }
-]
+// 👉 map strings-from-backend → components
+const iconMap = {
+  PhoneIcon,
+  EmailIcon,
+  LinkedInIcon,
+  GitHubIcon,
+  TwitterIcon
+}
 
-useSeoMeta({
-  title: 'Contact Us | Web App Development Services',
-  description:
-    'Contact us for SEO-friendly web application development, SaaS products, APIs, and business tools. Get fast, modern and scalable solutions.',
-  ogTitle: 'Contact — Web App Development',
-  ogDescription:
-    'Reach out for custom web app development, SEO optimized websites, and scalable SaaS platforms.',
-  ogType: 'website',
-  twitterCard: 'summary_large_image'
-})
+const contacts = ref([])
+const loading = ref(true)
 
-useHead({
-  script: [
-    {
-      type: 'application/ld+json',
-      innerHTML: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "ContactPage",
-        name: "Contact Us",
-        description:
-          "Contact for professional SEO-optimized web application development and SaaS solutions.",
-        url: "https://yourdomain.com/contact",
-        organization: {
-          "@type": "IT web development",
-          name: "kedcraft",
-          email: "kedargolande9@gmail.com",
-          telephone: "+91-9146755163"
-        }
-      })
-    }
-  ]
-})
+const { data, error } = await useAsyncData('contactData', () =>
+  apiService.get('contactData', {}, { useToken: false })
+)
 
+if (!error.value && data.value) {
+  contacts.value = data.value.map(item => ({
+    ...item,
+    icon: iconMap[item.icon] || PhoneIcon
+  }))
+}
+
+loading.value = false
 </script>
 
 <style scoped>
@@ -110,24 +100,11 @@ useHead({
          border border-gray-200 shadow-md
          hover:shadow-2xl hover:-translate-y-2 transition-all transform;
 }
-
 .icon {
   @apply p-4 rounded-full flex items-center justify-center text-white text-lg shadow-md;
 }
-
-@keyframes popUp {
-  0% { opacity: 0; transform: translateY(20px) scale(0.95); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
-}
-.animate-popUp {
-  animation: popUp 0.6s ease forwards;
-}
-
-@keyframes fadeIn {
-  0% { opacity: 0; transform: translateY(20px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-.animate-fadeIn {
-  animation: fadeIn 1s ease forwards;
-}
+@keyframes popUp { 0%{opacity:0;transform:translateY(20px) scale(0.95)} 100%{opacity:1;transform:translateY(0) scale(1)} }
+.animate-popUp { animation: popUp 0.6s ease forwards; }
+@keyframes fadeIn { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
+.animate-fadeIn { animation: fadeIn 1s ease forwards; }
 </style>

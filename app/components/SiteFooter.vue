@@ -1,52 +1,55 @@
 <template>
-  <footer class="bg-slate-700 text-white pt-16 pb-8">
+  <footer class="bg-gradient-to-r from-gray-900 via-slate-900 to-gray-900 text-white pt-16 pb-8">
     <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">
-      
-      <!-- Company Info -->
+
+      <!-- Brand -->
       <div>
-        <h3 class="text-2xl font-bold mb-4"><span class="text-yellow-400">Ked</span>Craft</h3>
+        <h3 class="text-2xl font-bold mb-4">
+          <span class="text-yellow-400">elight</span>shop
+        </h3>
         <p class="text-gray-400 text-sm">
-          Providing modern web & mobile app solutions, SaaS platforms, and custom API integrations. 
-          Helping businesses grow fast, smooth, and scalable.
+          Your trusted online shopping platform — quality products, secure
+          payments and fast delivery at your doorstep.
         </p>
       </div>
 
-      <!-- Services -->
+      <!-- Shop -->
       <div>
-        <h4 class="text-xl font-semibold mb-4">Services</h4>
+        <h4 class="text-xl font-semibold mb-4">Shop</h4>
         <ul class="space-y-2 text-gray-400">
-          <li><NuxtLink to="/" class="hover:text-white transition">Web Development</NuxtLink></li>
-          <li><NuxtLink to="/" class="hover:text-white transition">SaaS & SPA Apps</NuxtLink></li>
-          <li><NuxtLink to="/" class="hover:text-white transition">API Integration</NuxtLink></li>
-          <li><NuxtLink to="/" class="hover:text-white transition">E-commerce Solutions</NuxtLink></li>
+          <!-- <li><NuxtLink to="/products" class="hover:text-white transition">All Products</NuxtLink></li> -->
+          <li><NuxtLink to="/categories" class="hover:text-white transition">Categories</NuxtLink></li>
+          <li><NuxtLink to="/deals" class="hover:text-white transition">Today’s Deals</NuxtLink></li>
+          <li><NuxtLink to="/cart" class="hover:text-white transition">My Cart</NuxtLink></li>
         </ul>
       </div>
 
-      <!-- About & Contact -->
+      <!-- Account & Help -->
       <div>
-        <h4 class="text-xl font-semibold mb-4">About & Contact</h4>
-        <ul class="space-y-2 text-gray-400 mb-4">
-          <li><NuxtLink to="/about" class="hover:text-white transition">About Us</NuxtLink></li>
-          <li><NuxtLink to="/contact" class="hover:text-white transition">Contact Us</NuxtLink></li>
-          <li><NuxtLink to="/privacypolicy" class="hover:text-white transition">Privacy Policy</NuxtLink></li>
-          <li><NuxtLink to="/terms" class="hover:text-white transition">Terms & Conditions</NuxtLink></li>
+        <h4 class="text-xl font-semibold mb-4">Help & Support</h4>
+        <ul class="space-y-2 text-gray-400">
+          <!-- <li><NuxtLink to="/orders" class="hover:text-white transition">My Orders</NuxtLink></li>
+          <li><NuxtLink to="/account" class="hover:text-white transition">My Account</NuxtLink></li>
+          <li><NuxtLink to="/returns" class="hover:text-white transition">Returns & Refunds</NuxtLink></li>
+          <li><NuxtLink to="/shipping" class="hover:text-white transition">Shipping Info</NuxtLink></li>
+          <li><NuxtLink to="/support" class="hover:text-white transition">Help Center</NuxtLink></li> -->
         </ul>
       </div>
 
-      <!-- Social Links -->
+      <!-- Social -->
       <div>
         <h4 class="text-xl font-semibold mb-4">Follow Us</h4>
         <div class="flex space-x-6">
-          <a href="https://www.linkedin.com/in/kedar-golande-411b9b167" target="_blank" class="text-gray-400 hover:text-blue-600 transition text-3xl">
+          <a href="#" class="text-gray-400 hover:text-blue-600 transition text-3xl">
             <IconifyIcon icon="mdi:linkedin" />
           </a>
-          <a href="#" target="_blank" class="text-gray-400 hover:text-pink-500 transition text-3xl">
+          <a href="#" class="text-gray-400 hover:text-pink-500 transition text-3xl">
             <IconifyIcon icon="mdi:instagram" />
           </a>
-          <a href="#" target="_blank" class="text-gray-400 hover:text-blue-400 transition text-3xl">
+          <a href="#" class="text-gray-400 hover:text-blue-400 transition text-3xl">
             <IconifyIcon icon="mdi:twitter" />
           </a>
-          <a href="#" target="_blank" class="text-gray-400 hover:text-blue-700 transition text-3xl">
+          <a href="#" class="text-gray-400 hover:text-blue-700 transition text-3xl">
             <IconifyIcon icon="mdi:facebook" />
           </a>
         </div>
@@ -54,13 +57,13 @@
 
     </div>
 
-    <!-- Bottom Copyright -->
+    <!-- Bottom -->
     <div class="mt-12 border-t border-gray-800 pt-6 text-center text-gray-500 text-sm">
-      © {{ new Date().getFullYear() }} Kedar Golande. All rights reserved.
+      © {{ new Date().getFullYear() }} elightshop. All rights reserved.
     </div>
   </footer>
 </template>
 
 <script setup>
-import { Icon as IconifyIcon } from '@iconify/vue';
+import { Icon as IconifyIcon } from '@iconify/vue'
 </script>
