@@ -67,13 +67,13 @@ const onSubmit = handleSubmit(async (values) => {
     mobile: values.mobile,
     username: values.username,
     password: values.password,
-    confirmPassword: values.confirmPassword,
+    password_confirmation: values.confirmPassword,
   }
 
   const res = await auth.register(payload)
 
   if (res.success) {
-    router.push("/dashboard") // or /login if you prefer
+    router.push("/shop") // or /login if you prefer
   } else {
     alert(res.message)
   }

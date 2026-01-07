@@ -1,118 +1,86 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import api from '../utils/api'
+import apiService from '../utils/api'
 import { useRouter } from 'vue-router'
-
-const TOKEN_KEY = 'auth_token'
-const USER_KEY = 'auth_user'
 
 export const useAuthStore = defineStore('auth', () => {
   const router = useRouter()
+  const user = ref(null)
+  const isAuthenticated = computed(() => !!user.value)
 
-  // ---- SAFE READ (SSR friendly) ----
-  const token = ref(
-    process.client ? localStorage.getItem(TOKEN_KEY) : null
-  )
+  const isLoading = ref(false)
 
-  const user = ref(
-    process.client
-      ? JSON.parse(localStorage.getItem(USER_KEY) || 'null')
-      : null
-  )
-
-  const isAuthenticated = computed(() => !!token.value)
-
-  function persist() {
+  function persistUser() {
     if (!process.client) return
-
-    if (token.value)
-      localStorage.setItem(TOKEN_KEY, token.value)
-    else
-      localStorage.removeItem(TOKEN_KEY)
-
-    if (user.value)
-      localStorage.setItem(USER_KEY, JSON.stringify(user.value))
-    else
-      localStorage.removeItem(USER_KEY)
+    if (user.value) localStorage.setItem('auth_user', JSON.stringify(user.value))
+    else localStorage.removeItem('auth_user')
   }
 
-  // ---- VALIDATE TOKEN ----
-  async function validateToken() {
-    if (!token.value) return
+  function loadUserFromStorage() {
+    if (!process.client) return
+    const stored = localStorage.getItem('auth_user')
+    if (stored) user.value = JSON.parse(stored)
+  }
+
+  async function fetchUser() {
+    if (user.value) return user.value
+
+    // Try localStorage first
+    if (process.client) {
+      const stored = localStorage.getItem('auth_user')
+      if (stored) {
+        user.value = JSON.parse(stored)
+        return user.value
+      }
+    }
+
+    isLoading.value = true
     try {
-      await api.get('/profile')
-    } catch {
-      token.value = null
+      // Call Nuxt API (me.get.js) → reads cookie
+      const res = await $fetch('/api/me', { credentials: 'include' })
+      if (res?.status === 'success' && res.user) {
+        user.value = res.user
+        persistUser()
+        return user.value
+      }
       user.value = null
-      persist()
+      persistUser()
+      return null
+    } catch {
+      user.value = null
+      persistUser()
+      return null
+    } finally {
+      isLoading.value = false
     }
   }
 
-  // ---- LOGIN ----
-  async function login(params = {}) {
+  async function login(params) {
+    const res = await apiService.post('/login', params, { withCredentials: true })
+    if (res?.status === 'success' && res.user) {
+      user.value = res.user
+      persistUser()
+      return { success: true }
+    }
+    return { success: false, message: res?.message || 'Login failed' }
+  }
+
+  async function logout() {
     try {
-      const data = await api.post('/login', params)
-
-      if (data?.status !== 'error' && data?.token) {
-        token.value = data.token
-        user.value = data.user
-        persist()
-        return { success: true }
-      }
-
-      return { success: false, message: data?.message || 'Invalid credentials' }
-    } catch (err) {
-      console.error('Login error:', err)
-      return {
-        success: false,
-        message: err?.response?.data?.message || err.message || 'Login failed',
-      }
-    }
-  }
-
-  // ---- REGISTER ----
-  async function register(params = {}) {
-    try {
-      const data = await api.post('/register', params)
-
-      if (data?.status !== 'error' && data?.token) {
-        token.value = data.token
-        user.value = data.user
-        persist()
-        return { success: true }
-      }
-
-      return {
-        success: false,
-        message: data?.message || 'Registration failed: invalid response',
-      }
-    } catch (err) {
-      console.error('Register error:', err)
-      return {
-        success: false,
-        message: err?.response?.data?.message || err.message || 'Registration failed',
-      }
-    }
-  }
-
-  // ---- LOGOUT ----
-  function logout() {
-    token.value = null
+      await $fetch('/api/logout', { method: 'POST', credentials: 'include' })
+    } catch {}
     user.value = null
-    persist()
+    if (process.client) localStorage.removeItem('auth_user')
+    router.push('/login')
+  }
+  
+  if (process.client) loadUserFromStorage()
 
-    router.push({
-      name: 'login', // make sure route name is lowercase if your page is /login
-    })
+
+  function setUser(userData) {
+    user.value = userData || null
+    persistUser()
   }
 
-  return {
-    token,
-    user,
-    isAuthenticated,
-    login,
-    register,
-    logout,
-    validateToken,
-  }
+  return { user, isAuthenticated, fetchUser, login, logout, isLoading, setUser }
 })

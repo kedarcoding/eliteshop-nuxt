@@ -45,25 +45,25 @@
 
         <!-- Login / Account (Conditional) -->
         <NuxtLink
-  v-if="!isLoggedIn"
-  to="/login"
-  @click="isOpen=false"
-  class="font-semibold hover:text-yellow-300 flex items-center gap-2"
->
-  Login
-  <span class="border border-gray-300 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">
-    ?
-  </span>
-</NuxtLink>
-
-
-
+          v-if="isReady && !isLoggedIn"
+          to="/login"
+          class="font-semibold hover:text-yellow-300 flex items-center gap-2"
+        >
+          Login
+        </NuxtLink>
         <NuxtLink
-          v-else
+          v-else-if="isReady && isLoggedIn"
           to="/account"
           class="font-semibold hover:text-yellow-300"
         >
           My Account
+        </NuxtLink>
+        <NuxtLink
+            v-if="isReady && isLoggedIn"
+            @click.prevent="authStore.logout()"
+            class="font-semibold hover:text-yellow-300"
+          >
+            Logout
         </NuxtLink>
       </nav>
 
@@ -112,22 +112,23 @@
 
           <!-- Login / Account (Mobile) -->
           <NuxtLink
-            v-if="!isLoggedIn"
+            v-if="isReady && !isLoggedIn"
             to="/login"
             @click="isOpen=false"
             class="font-semibold hover:text-yellow-300"
           >
-            Login ?
+            Login
           </NuxtLink>
-
           <NuxtLink
-            v-else
+            v-else-if="isReady && isLoggedIn"
             to="/account"
             @click="isOpen=false"
             class="font-semibold hover:text-yellow-300"
           >
             My Account
           </NuxtLink>
+          
+
         </div>
       </div>
     </transition>
@@ -135,15 +136,22 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted } from "vue"
+import { useAuthStore } from "../stores/auth"
+import { useCartStore } from "../stores/cart"
+
+
+const authStore = useAuthStore()
+
+// Reactive login state
+const isLoggedIn = computed(() => !!authStore.user)
+const isReady = ref(false) // wait until fetchUser finishes
 
 const route = useRoute()
 const isOpen = ref(false)
 const search = ref('')
-const cartCount = ref(2)
-
-// 🔐 later replace with real auth
-const isLoggedIn = ref(false)
+const cart = useCartStore()
+const cartCount = computed(() => cart.cartCount)
 
 const menu = [
   { label: 'Home', to: '/' },
@@ -151,6 +159,15 @@ const menu = [
   { label: 'Categories', to: '/categories' },
   { label: 'Deals', to: '/deals' }
 ]
+
+// ---- Hydrate user once on client ----
+onMounted(async () => {
+  try {
+    await authStore.fetchUser() // fetch from localStorage / cookie / api
+  } finally {
+    isReady.value = true
+  }
+})
 </script>
 
 <style>

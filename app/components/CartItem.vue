@@ -1,10 +1,13 @@
 <template>
   <div class="flex gap-4 bg-white shadow rounded-xl p-4">
-    <img :src="item.image" class="w-20 h-20 rounded-xl object-cover" />
+    <!-- image ab product ke andar hai -->
+    <img :src="item.product.image || '/images/placeholder.png'" class="w-20 h-20 rounded-xl object-cover" />
 
     <div class="flex-1">
-      <h3 class="font-semibold text-lg">{{ item.name }}</h3>
+      <!-- name product ke andar -->
+      <h3 class="font-semibold text-lg">{{ item.product.name }}</h3>
 
+      <!-- price product ke sell_price se -->
       <p class="text-gray-500 text-sm">₹ {{ item.price }}</p>
 
       <div class="flex items-center gap-4 mt-3">
@@ -30,6 +33,7 @@
     </div>
   </div>
 </template>
+
 
 <script setup>
 import { useCartStore } from '../stores/cart'

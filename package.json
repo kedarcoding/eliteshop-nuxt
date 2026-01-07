@@ -12,7 +12,9 @@
   "dependencies": {
     "@iconify/vue": "^5.0.0",
     "@pinia/nuxt": "^0.11.3",
+    "@prisma/client": "^7.2.0",
     "axios": "^1.13.2",
+    "jsonwebtoken": "^9.0.3",
     "nuxt": "^4.2.2",
     "pinia": "^3.0.4",
     "vee-validate": "^4.15.1",

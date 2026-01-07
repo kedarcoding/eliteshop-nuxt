@@ -5,7 +5,9 @@
 
     <!-- Scrollable main content -->
     <main class="flex-1 overflow-y-auto overflow-x-hidden container mx-auto p-6 mt-4 mb-4">
-      <slot />
+      <div>
+       <slot />
+      </div>
     </main>
 
     <!-- Sticky Footer -->

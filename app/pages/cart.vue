@@ -7,6 +7,7 @@
     </div>
 
     <div class="space-y-4" v-else>
+      <!-- CartItem me ab product ke andar details hai -->
       <CartItem v-for="i in cart.items" :key="i.id" :item="i" />
 
       <div class="flex justify-between items-center mt-6 p-4 bg-slate-100 rounded-xl">
@@ -24,7 +25,14 @@
 </template>
 
 <script setup>
-import CartItem from '@/components/CartItem.vue'
+import CartItem from '../components/CartItem.vue'
 import { useCartStore } from '../stores/cart'
+import { onMounted } from 'vue'
+
 const cart = useCartStore()
+
+// On mount, fetch cart items from API
+onMounted(async () => {
+  await cart.fetchCart()
+})
 </script>

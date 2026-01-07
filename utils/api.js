@@ -1,13 +1,13 @@
 // utils/api.js
 import axios from 'axios';
-import { useAuthStore } from '../stores/auth';
 
+// ✅ COOKIE-based auth: withCredentials true
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE + '/api' || 'http://localhost:8000/api',
   headers: {
     Accept: 'application/json',
   },
-  withCredentials: false, // adjust if you need cookies
+  withCredentials: true, // 👈 cookies browser se auto bhejne ke liye
 });
 
 // Clean undefined / null (keep false/0)
@@ -18,29 +18,6 @@ function cleanPayload(obj) {
     return acc;
   }, {});
 }
-
-// Request interceptor: attach token if required
-api.interceptors.request.use(config => {
-  const { useToken = true } = config; // default true
-  const skipAuth = ['/login', '/register'].some(p => config.url?.endsWith(p));
-
-  if (useToken && !skipAuth) {
-    const auth = useAuthStore(); // lazy init
-    const token = auth?.token;
-    if (token) {
-      config.headers = {
-        ...config.headers,
-        Authorization: `Bearer ${token}`,
-      };
-    }
-  }
-
-  // Remove custom config flags
-  if (config.useToken !== undefined) delete config.useToken;
-  if (config.asFormData !== undefined) delete config.asFormData;
-
-  return config;
-});
 
 // Normalize errors
 function normalizeError(e) {
