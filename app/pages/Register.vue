@@ -60,6 +60,7 @@ const { value: password } = useField("password")
 const { value: confirmPassword } = useField("confirmPassword")
 
 // -------- SUBMIT ------------
+// -------- SUBMIT ------------
 const onSubmit = handleSubmit(async (values) => {
   const payload = {
     name: values.name,
@@ -70,14 +71,19 @@ const onSubmit = handleSubmit(async (values) => {
     password_confirmation: values.confirmPassword,
   }
 
-  const res = await auth.register(payload)
+  const res = await $fetch("/api/register", {
+    method: "POST",
+    body: payload,
+  })
 
   if (res.success) {
-    router.push("/shop") // or /login if you prefer
+    auth.setUser(res.user)   // ✅ user store me save
+    router.push("/shop")
   } else {
     alert(res.message)
   }
 })
+
 </script>
 
 <template>

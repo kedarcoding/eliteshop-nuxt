@@ -27,7 +27,7 @@
           class="ml-auto text-red-500"
           @click="cart.remove(item.id)"
         >
-          Remove
+          <Icon icon="mdi:trash-can-outline" class="text-lg" />
         </button>
       </div>
     </div>
@@ -36,6 +36,7 @@
 
 
 <script setup>
+import { Icon } from '@iconify/vue'
 import { useCartStore } from '../stores/cart'
 const cart = useCartStore()
 const props = defineProps({ item: Object })
